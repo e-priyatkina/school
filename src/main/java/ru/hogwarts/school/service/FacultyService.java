@@ -8,7 +8,7 @@ public interface FacultyService {
 
     Faculty createFaculty(Faculty faculty);
 
-    boolean findFaculty(long id);
+    Faculty findFaculty(long id);
 
     Faculty updateFaculty(Faculty faculty);
 

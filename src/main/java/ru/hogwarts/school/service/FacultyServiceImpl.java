@@ -12,18 +12,21 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
-        faculty.setId(++lastId);
-        faculties.put(lastId, faculty);
+        faculty.setId(lastId++);
+        faculties.put(faculty.getId(), faculty);
         return faculty;
     }
 
     @Override
-    public boolean findFaculty(long id) {
-        return faculties.containsKey(id);
+    public Faculty findFaculty(long id) {
+        return faculties.get(id);
     }
 
     @Override
     public Faculty updateFaculty(Faculty faculty) {
+        if (!faculties.containsKey(faculty.getId())) {
+            return null;
+        }
         faculties.put(faculty.getId(), faculty);
         return faculty;
     }
