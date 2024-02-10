@@ -23,11 +23,11 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty updateFaculty(Faculty faculty) {
-        if (!faculties.containsKey(faculty.getId())) {
+    public Faculty updateFaculty(long id, Faculty faculty) {
+        if (!faculties.containsKey(id)) {
             return null;
         }
-        faculties.put(faculty.getId(), faculty);
+        faculties.put(id, faculty);
         return faculty;
     }
 

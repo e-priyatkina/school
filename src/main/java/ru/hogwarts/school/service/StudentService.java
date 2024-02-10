@@ -10,7 +10,7 @@ public interface StudentService {
 
     Student findStudent(long id);
 
-    Student updateStudent(Student student);
+    Student updateStudent(long id, Student student);
 
     Student deleteStudent(long id);
 

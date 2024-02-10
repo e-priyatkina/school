@@ -23,11 +23,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student updateStudent(Student student) {
-        if (!students.containsKey(student.getId())) {
+    public Student updateStudent(long id, Student student) {
+        if (!students.containsKey(id)) {
             return null;
         }
-        students.put(student.getId(), student);
+        students.put(id, student);
         return student;
     }
 
