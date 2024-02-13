@@ -34,8 +34,8 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Student> editStudent(@PathVariable long id, @RequestBody Student student) {
-        Student foundStudent = studentService.updateStudent(id, student);
+    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
+        Student foundStudent = studentService.updateStudent(student);
         if (foundStudent == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -49,9 +49,9 @@ public class StudentController {
     }
 
     @GetMapping("/age")
-    public ResponseEntity<Collection<Student>> getStudentsByAge(@RequestParam(required = false) int age) {
+    public ResponseEntity<Collection<Student>> findByAge(@RequestParam(required = false) int age) {
         if (age > 0) {
-            return ResponseEntity.ok(studentService.getStudentsByAge(age));
+            return ResponseEntity.ok(studentService.findByAge(age));
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
