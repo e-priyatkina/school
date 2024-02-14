@@ -1,6 +1,7 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
@@ -22,16 +23,25 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty findFaculty(long id) {
-        return facultyRepository.findById(id).get();
+        return facultyRepository.findById(id).orElseThrow(() -> new FacultyNotFoundException(id));
     }
 
     @Override
-    public Faculty updateFaculty(Faculty faculty) {
-        return facultyRepository.save(faculty);
+    public Faculty updateFaculty(long id, Faculty faculty) {
+        if (!facultyRepository.existsById(id)) {
+            throw new FacultyNotFoundException(id);
+        }
+        Faculty old = facultyRepository.getReferenceById(id);
+        old.setName(faculty.getName());
+        old.setColor(faculty.getColor());
+        return old;
     }
 
     @Override
     public void deleteFaculty(long id) {
+        if (!facultyRepository.existsById(id)) {
+            throw new FacultyNotFoundException(id);
+        }
         facultyRepository.deleteById(id);
     }
 

@@ -44,7 +44,7 @@ public class FacultyServiceImplTest {
     @Test
     public void updateFacultyTest() {
         Faculty faculty = new Faculty(1L, "asd", "red");
-        facultyServiceImpl.updateFaculty(faculty);
+        facultyServiceImpl.updateFaculty(faculty.getId(), faculty);
         Mockito.verify(facultyRepository, times(1)).save(faculty);
     }
 

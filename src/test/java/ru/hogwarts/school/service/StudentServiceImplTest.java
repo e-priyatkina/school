@@ -45,7 +45,7 @@ public class StudentServiceImplTest {
     @Test
     public void updateStudentTest() {
         Student student = new Student(1L, "Harry", 11);
-        studentServiceImpl.updateStudent(student);
+        studentServiceImpl.updateStudent(student.getId(), student);
         Mockito.verify(studentRepository, times(1)).save(student);
     }
 
