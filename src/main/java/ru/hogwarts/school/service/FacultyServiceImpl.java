@@ -28,10 +28,10 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty updateFaculty(long id, Faculty faculty) {
-        if (!facultyRepository.existsById(id)) {
+        if (facultyRepository.findById(id).isEmpty()) {
             throw new FacultyNotFoundException(id);
         }
-        Faculty old = facultyRepository.getReferenceById(id);
+        Faculty old = facultyRepository.findById(id).get();
         old.setName(faculty.getName());
         old.setColor(faculty.getColor());
         return old;
@@ -48,6 +48,11 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public List<Faculty> findByColor(String color) {
         return facultyRepository.findByColor(color);
+    }
+
+    @Override
+    public Faculty findByNameOrColor(String name, String color) {
+        return facultyRepository.findByNameOrColorIgnoreCase(name, color);
     }
 }
 

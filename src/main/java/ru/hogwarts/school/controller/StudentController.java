@@ -63,4 +63,14 @@ public class StudentController {
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
+
+    @GetMapping
+    @Operation(summary = "Список студентов в возрастном промежутке")
+    public ResponseEntity<Collection<Student>> findByAgeBetween(@RequestParam int startAge,
+                                                                @RequestParam int endAge) {
+        if (startAge > 0 && endAge > 0) {
+            return ResponseEntity.ok(studentService.findByAgeBetween(startAge, endAge));
+        }
+        return ResponseEntity.ok(Collections.emptyList());
+    }
 }
