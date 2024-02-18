@@ -1,8 +1,8 @@
 package ru.hogwarts.school.service;
 
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.entity.Faculty;
+import ru.hogwarts.school.entity.Student;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface StudentService {
@@ -18,5 +18,7 @@ public interface StudentService {
     List<Student> findByAge(int age);
 
     List<Student> findByAgeBetween(int startAge, int endAge);
+
+    Faculty findFaculty(long id);
 
 }

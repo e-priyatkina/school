@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.entity.Faculty;
+import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Tag(name = "Факультеты")
 @RestController
@@ -59,7 +61,7 @@ public class FacultyController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping(params = "color")
     @Operation(summary = "Фильтрация по цвету")
     public ResponseEntity<Collection<Faculty>> findByColor(@RequestParam String color) {
         if (color != null && !color.isBlank()) {
@@ -68,10 +70,14 @@ public class FacultyController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
-    @GetMapping
+    @GetMapping(params = "nameOrColor")
     @Operation(summary = "Возвращает факультет по имени или цвету")
-    public ResponseEntity<Faculty> findByNameOrColor(@RequestParam(required = false) String name,
-                                                     @RequestParam(required = false) String color) {
-        return ResponseEntity.ok(facultyService.findByNameOrColor(name, color));
+    public List<Faculty> findByNameOrColor(@RequestParam String nameOrColor) {
+        return facultyService.findByNameOrColor(nameOrColor);
+    }
+
+    @GetMapping("/{id}/students")
+    public List<Student> findStudents(@PathVariable long id) {
+        return facultyService.findStudents(id);
     }
 }

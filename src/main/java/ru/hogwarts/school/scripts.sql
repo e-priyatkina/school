@@ -1,4 +1,4 @@
-select * from students where age > 11 and age < 14;
+select * from students where age BETWEEN 11 and 14;
 
 select name from students;
 

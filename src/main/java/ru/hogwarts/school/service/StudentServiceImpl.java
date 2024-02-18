@@ -1,10 +1,11 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.exception.StudentNotFoundException;
-import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.entity.Student;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.*;
@@ -14,12 +15,21 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    private final FacultyRepository facultyRepository;
+
+    public StudentServiceImpl(StudentRepository studentRepository, FacultyRepository facultyRepository) {
         this.studentRepository = studentRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     @Override
     public Student createStudent(Student student) {
+        student.setId(null);
+        if (student.getFaculty() != null && student.getFaculty().getId() != null) {
+            Faculty faculty = facultyRepository.findById(student.getFaculty().getId())
+                    .orElseThrow(() -> new FacultyNotFoundException(student.getFaculty().getId()));
+            student.setFaculty(faculty);
+        }
         return studentRepository.save(student);
     }
 
@@ -30,13 +40,19 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(long id, Student student) {
-        if (studentRepository.findById(id).isEmpty()) {
-            throw new StudentNotFoundException(id);
-        }
-        Student old = studentRepository.findById(id).get();
-        old.setName(student.getName());
-        old.setAge(student.getAge());
-        return old;
+        return studentRepository.findById(id)
+                .map(oldStudent -> {
+                    oldStudent.setName(student.getName());
+                    oldStudent.setAge(student.getAge());
+                    if (student.getFaculty() != null && student.getFaculty().getId() != null) {
+                        Faculty faculty = facultyRepository.findById(student.getFaculty().getId())
+                                .orElseThrow(() -> new FacultyNotFoundException(student.getFaculty().getId()));
+                        oldStudent.setFaculty(faculty);
+                    }
+                    return oldStudent;
+                })
+                .orElseThrow(() -> new StudentNotFoundException(id));
+
     }
 
     @Override
@@ -55,5 +71,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> findByAgeBetween(int startAge, int endAge) {
         return studentRepository.findByAgeBetween(startAge, endAge);
+    }
+
+    @Override
+    public Faculty findFaculty(long id) {
+        return findFaculty(id).getFaculty();
+        //здесь getFaculty() почему-то выделяется красным
     }
 }

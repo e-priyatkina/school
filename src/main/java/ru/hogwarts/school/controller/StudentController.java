@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.entity.Faculty;
+import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
@@ -59,7 +60,7 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping(params = "age")
     @Operation(summary = "Фильтрация по возрасту")
     public ResponseEntity<Collection<Student>> findByAge(@RequestParam int age) {
         if (age > 0) {
@@ -68,7 +69,7 @@ public class StudentController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
-    @GetMapping
+    @GetMapping(params = {"startAge", "endAge"})
     @Operation(summary = "Список студентов в возрастном промежутке")
     public ResponseEntity<Collection<Student>> findByAgeBetween(@RequestParam int startAge,
                                                                 @RequestParam int endAge) {
@@ -76,5 +77,10 @@ public class StudentController {
             return ResponseEntity.ok(studentService.findByAgeBetween(startAge, endAge));
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+
+    @GetMapping("/{id}/faculty")
+    public Faculty findFaculty(@PathVariable long id) {
+        return studentService.findFaculty(id);
     }
 }

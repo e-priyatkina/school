@@ -1,9 +1,11 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
-import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.*;
 
@@ -12,12 +14,16 @@ public class FacultyServiceImpl implements FacultyService {
     
     private final FacultyRepository facultyRepository;
 
-    public FacultyServiceImpl(FacultyRepository facultyRepository) {
+    private final StudentRepository studentRepository;
+
+    public FacultyServiceImpl(FacultyRepository facultyRepository, StudentRepository studentRepository) {
         this.facultyRepository = facultyRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
+        faculty.setId(null);
         return facultyRepository.save(faculty);
     }
 
@@ -28,13 +34,13 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty updateFaculty(long id, Faculty faculty) {
-        if (facultyRepository.findById(id).isEmpty()) {
-            throw new FacultyNotFoundException(id);
-        }
-        Faculty old = facultyRepository.findById(id).get();
-        old.setName(faculty.getName());
-        old.setColor(faculty.getColor());
-        return old;
+        return facultyRepository.findById(id)
+                .map(oldFaculty -> {
+                    oldFaculty.setName(faculty.getName());
+                    oldFaculty.setColor(faculty.getColor());
+                    return oldFaculty;
+                })
+                .orElseThrow(() -> new FacultyNotFoundException(id));
     }
 
     @Override
@@ -51,8 +57,14 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty findByNameOrColor(String name, String color) {
-        return facultyRepository.findByNameOrColorIgnoreCase(name, color);
+    public List<Faculty> findByNameOrColor(String nameOrColor) {
+        return facultyRepository.findByNameIgnoreCaseOrColorIgnoreCase(nameOrColor, nameOrColor);
+    }
+
+    @Override
+    public List<Student> findStudents(long id) {
+        Faculty faculty = findFaculty(id);
+        return studentRepository.findByFaculty_Id(faculty.getId());
     }
 }
 
