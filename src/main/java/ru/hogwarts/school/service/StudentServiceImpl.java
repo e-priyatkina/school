@@ -56,11 +56,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void deleteStudent(long id) {
+    public Student deleteStudent(long id) {
         if (!studentRepository.existsById(id)) {
             throw new StudentNotFoundException(id);
         }
+        Student studentDelete = findStudent(id);
         studentRepository.deleteById(id);
+        return studentDelete;
     }
 
     @Override
@@ -75,7 +77,6 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Faculty findFaculty(long id) {
-        return findFaculty(id).getFaculty();
-        //здесь getFaculty() почему-то выделяется красным
+        return findStudent(id).getFaculty();
     }
 }

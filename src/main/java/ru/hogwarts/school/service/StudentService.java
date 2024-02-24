@@ -13,7 +13,7 @@ public interface StudentService {
 
     Student updateStudent(long id, Student student);
 
-    void deleteStudent(long id);
+    Student deleteStudent(long id);
 
     List<Student> findByAge(int age);
 

@@ -44,11 +44,13 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public void deleteFaculty(long id) {
+    public Faculty deleteFaculty(long id) {
         if (!facultyRepository.existsById(id)) {
             throw new FacultyNotFoundException(id);
         }
+        Faculty facultyDelete = findFaculty(id);
         facultyRepository.deleteById(id);
+        return facultyDelete;
     }
 
     @Override
