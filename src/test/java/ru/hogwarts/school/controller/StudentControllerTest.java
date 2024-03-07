@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,10 @@ public class StudentControllerTest {
 
     List<Student> students = new ArrayList<>();
 
+    Student student1;
+
+    List<Student> studentList;
+
     @AfterEach
     public void afterEach() {
         studentRepository.deleteAll();
@@ -44,7 +50,7 @@ public class StudentControllerTest {
     @BeforeEach
     public void beforeEach() {
 
-        Student student1 = new Student();
+        student1 = new Student();
         student1.setName("Harry");
         student1.setAge(11);
 
@@ -55,7 +61,14 @@ public class StudentControllerTest {
         students.add(student1);
         students.add(student2);
 
-        studentRepository.saveAll(students);
+        studentList = studentRepository.saveAll(students);
+    }
+
+    @Test
+    public void getStudentInfoTest() {
+        Assertions.assertThat(this.testRestTemplate
+                        .getForObject("http://localhost:" + port + "/student/" + studentList.get(0).getId(), String.class))
+                        .isNotNull();
     }
 
     @Test
@@ -65,7 +78,7 @@ public class StudentControllerTest {
         student.setAge(11);
 
         ResponseEntity<Student> responseEntity = testRestTemplate.postForEntity
-                ("http://localhost/" + port + "/student",
+                ("http://localhost:" + port + "/student",
                 student,
                 Student.class);
 
@@ -87,6 +100,73 @@ public class StudentControllerTest {
     }
 
     @Test
+    public void editStudentTest() {
+        Student student = new Student();
+        student.setId(1L);
+        student.setName("Germiona");
+        student.setAge(11);
+
+        HttpEntity<Student> studentHttpEntity = new HttpEntity<>(student);
+
+        ResponseEntity<Student> responseEntity = testRestTemplate.exchange
+                        ("http://localhost:" + port + "/student/" + studentList.get(0).getId(),
+                        HttpMethod.PUT,
+                        studentHttpEntity,
+                        Student.class);
+
+        Student created = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(created).isNotNull();
+        assertThat(created).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(student);
+        assertThat(created.getId()).isNotNull();
+
+        Optional<Student> fromDb = studentRepository.findById(created.getId());
+
+        assertThat(fromDb).isPresent();
+        assertThat(fromDb.get())
+                .usingRecursiveComparison()
+                .isEqualTo(created);
+    }
+
+    @Test
+    public void deleteStudentTest() {
+
+        testRestTemplate.delete("http://localhost:" + port + "/student/" + studentList.get(0).getId());
+
+        HttpEntity<Student> studentHttpEntity = new HttpEntity<>(student1);
+
+        ResponseEntity<Student> responseEntity = testRestTemplate.exchange
+                ("http://localhost:" + port + "/student/" + studentList.get(0).getId(),
+                        HttpMethod.PUT,
+                        studentHttpEntity,
+                        Student.class,
+                        studentList.get(0).getId());
+
+        Student deleted = responseEntity.getBody();
+
+        //приходит статус 500
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(deleted).isNotNull();
+    }
+
+    @Test
+    public void findByAge() {
+        HttpEntity<Student> studentHttpEntity = new HttpEntity<>(student1);
+
+        ResponseEntity<Student> responseEntity = testRestTemplate.exchange
+                ("http://localhost:" + port + "/student/" + 11,
+                        HttpMethod.GET,
+                        studentHttpEntity,
+                        Student.class);
+
+        //тоже статус 500
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void findByAgeBetweenTest() {
         int minAge = 11;
         int maxAge = 14;
@@ -95,7 +175,7 @@ public class StudentControllerTest {
                 .toList();
 
         ResponseEntity<List<Student>> responseEntity = testRestTemplate.exchange(
-                "http://localhost/" + port + "student?minAge={minAge}&maxAge={maxAge}",
+                "http://localhost:" + port + "/student?startAge={minAge}&endAge={maxAge}",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<>() {

@@ -40,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(long id, Student student) {
-        return studentRepository.findById(id)
+ /*       return studentRepository.findById(id)
                 .map(oldStudent -> {
                     oldStudent.setName(student.getName());
                     oldStudent.setAge(student.getAge());
@@ -51,7 +51,11 @@ public class StudentServiceImpl implements StudentService {
                     }
                     return oldStudent;
                 })
-                .orElseThrow(() -> new StudentNotFoundException(id));
+                .orElseThrow(() -> new StudentNotFoundException(id));*/
+        if (!studentRepository.findById(id).isPresent()) {
+            throw new StudentNotFoundException(id);
+        }
+        return studentRepository.save(student);
 
     }
 

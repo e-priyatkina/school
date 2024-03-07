@@ -1,69 +1,66 @@
 package ru.hogwarts.school.controller;
 
-import org.assertj.core.api.Assertions;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.entity.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.service.FacultyService;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat.URI;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.RequestEntity.delete;
-import static org.springframework.http.RequestEntity.put;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest
 public class FacultyControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private FacultyRepository facultyRepository;
+
+    @SpyBean
+    private FacultyService facultyService;
+
+    @InjectMocks
     private FacultyController facultyController;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     @Test
-    void contextLoads() throws Exception {
-        Assertions.assertThat(facultyController).isNotNull();
+    public void createFacultyTest() throws Exception {
+        long id = 1L;
+        String name = "griffindor";
+        String color = "red";
+
+        //не получилось создать JSONObject
+        Faculty faculty = new Faculty();
+        faculty.setId(id);
+        faculty.setName(name);
+        faculty.setColor(color);
+
+        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/user") //send
+                        .content(facultyObject.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) //receive
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value(name));
     }
 
-    @Test
-    public void getFacultyInfoTest() throws Exception {
-        Assertions
-                .assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/info", String.class))
-                .isNotNull();
-    }
 
-    @Test
-    public void createFacultyTest() {
-
-    }
-
-    @Test
-    public void editFacultyTest() throws Exception {
-
-    }
-
-    @Test
-    public void deleteFacultyTest() {
-
-    }
-
-    @Test
-    public void findByColorTest() throws Exception {
-
-    }
-
-    @Test
-    public void findByyNameOrColorTest() throws Exception {
-
-    }
 }
