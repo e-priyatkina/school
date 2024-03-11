@@ -48,7 +48,7 @@ public class FacultyController {
 
     @GetMapping(params = "color")
     @Operation(summary = "Фильтрация по цвету")
-    public ResponseEntity<Collection<Faculty>> findByColor(@RequestParam String color) {
+    public ResponseEntity<List> findByColor(@RequestParam String color) {
             return ResponseEntity.ok(facultyService.findByColor(color));
     }
 

@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.service.FacultyServiceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = FacultyController.class)
 public class FacultyControllerTest {
 
     @Autowired
@@ -31,11 +32,11 @@ public class FacultyControllerTest {
     @MockBean
     private FacultyRepository facultyRepository;
 
-    @SpyBean
-    private FacultyService facultyService;
+    @MockBean
+    private StudentRepository studentRepository;
 
-    @InjectMocks
-    private FacultyController facultyController;
+    @SpyBean
+    private FacultyServiceImpl facultyServiceImpl;
 
     @Test
     public void createFacultyTest() throws Exception {
@@ -52,8 +53,11 @@ public class FacultyControllerTest {
         when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
         when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty));
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        String facultyObject= objectMapper.writeValueAsString(faculty);
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/user") //send
+                        .post("/faculty") //send
                         .content(facultyObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
