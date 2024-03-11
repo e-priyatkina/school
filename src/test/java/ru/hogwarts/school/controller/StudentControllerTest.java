@@ -162,7 +162,6 @@ public class StudentControllerTest {
                         studentHttpEntity,
                         Student.class);
 
-        //тоже статус 500
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

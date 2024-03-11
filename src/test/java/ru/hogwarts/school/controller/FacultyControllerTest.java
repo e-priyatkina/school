@@ -44,7 +44,6 @@ public class FacultyControllerTest {
         String name = "griffindor";
         String color = "red";
 
-        //не получилось создать JSONObject
         Faculty faculty = new Faculty();
         faculty.setId(id);
         faculty.setName(name);
