@@ -59,6 +59,7 @@ public class FacultyController {
     }
 
     @GetMapping("/{id}/students")
+    @Operation(summary = "Список студентов факультета")
     public List<Student> findStudents(@PathVariable long id) {
         return facultyService.findStudents(id);
     }

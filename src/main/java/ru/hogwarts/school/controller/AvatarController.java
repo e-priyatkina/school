@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @Tag(name = "Фото")
 @RestController
@@ -61,5 +62,13 @@ public class AvatarController {
             response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
         }
+    }
+
+    @GetMapping
+    @Operation(summary = "Пагинация")
+    public ResponseEntity<List<Avatar>> findAll(@RequestParam("page") Integer pageNumber,
+                                                @RequestParam("size") Integer pageSize) {
+        List<Avatar> avatars = avatarService.findAll(pageNumber, pageSize);
+        return ResponseEntity.ok(avatars);
     }
 }

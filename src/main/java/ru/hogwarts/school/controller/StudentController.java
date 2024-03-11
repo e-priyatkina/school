@@ -9,6 +9,7 @@ import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
+import javax.websocket.OnOpen;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -59,8 +60,8 @@ public class StudentController {
 
     @GetMapping(params = {"startAge", "endAge"})
     @Operation(summary = "Список студентов в возрастном промежутке")
-    public ResponseEntity<Collection<Student>> findByAgeBetween(@RequestParam int startAge,
-                                                                @RequestParam int endAge) {
+    public ResponseEntity<List> findByAgeBetween(@RequestParam int startAge,
+                                                 @RequestParam int endAge) {
         if (startAge > 0 && endAge > 0) {
             return ResponseEntity.ok(studentService.findByAgeBetween(startAge, endAge));
         }
@@ -68,7 +69,26 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/faculty")
+    @Operation(summary = "Факультет студента")
     public Faculty findFaculty(@PathVariable long id) {
         return studentService.findFaculty(id);
+    }
+
+    @GetMapping("/count-all-students")
+    @Operation(summary = "Количество всех студентов")
+    public Integer countAllStudents() {
+        return studentService.countAllStudents();
+    }
+
+    @GetMapping("/avg-age")
+    @Operation(summary = "Средний возраст студентов")
+    public Integer avgAgeStudents() {
+        return studentService.avgAgeStudents();
+    }
+
+    @GetMapping("/last-five-students")
+    @Operation(summary = "Пять последних студентов")
+    public List<Student> lastFiveStudents() {
+        return studentService.lastFiveStudents();
     }
 }

@@ -40,18 +40,6 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(long id, Student student) {
- /*       return studentRepository.findById(id)
-                .map(oldStudent -> {
-                    oldStudent.setName(student.getName());
-                    oldStudent.setAge(student.getAge());
-                    if (student.getFaculty() != null && student.getFaculty().getId() != null) {
-                        Faculty faculty = facultyRepository.findById(student.getFaculty().getId())
-                                .orElseThrow(() -> new FacultyNotFoundException(student.getFaculty().getId()));
-                        oldStudent.setFaculty(faculty);
-                    }
-                    return oldStudent;
-                })
-                .orElseThrow(() -> new StudentNotFoundException(id));*/
         if (!studentRepository.findById(id).isPresent()) {
             throw new StudentNotFoundException(id);
         }
@@ -82,5 +70,20 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Faculty findFaculty(long id) {
         return findStudent(id).getFaculty();
+    }
+
+    @Override
+    public Integer countAllStudents() {
+        return studentRepository.countAllStudents();
+    }
+
+    @Override
+    public Integer avgAgeStudents() {
+        return studentRepository.avgAgeStudents();
+    }
+
+    @Override
+    public List<Student> lastFiveStudents() {
+        return studentRepository.lastFiveStudents();
     }
 }
