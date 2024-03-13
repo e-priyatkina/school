@@ -65,5 +65,31 @@ public class FacultyControllerTest {
                 .andExpect(jsonPath("$.name").value(name));
     }
 
+    @Test
+    public void editFacultyTest() throws Exception {
+        long id = 1L;
+        String name = "griffindor";
+        String color = "red";
 
+        Faculty faculty = new Faculty();
+        faculty.setId(id);
+        faculty.setName(name);
+        faculty.setColor(color);
+
+        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String facultyObject= objectMapper.writeValueAsString(faculty);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/faculty/" + faculty.getId())
+                        .content(facultyObject.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.color").value(color));
+    }
 }
