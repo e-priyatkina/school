@@ -2,7 +2,7 @@
 --школы Хогвартс вместе с названиями факультетов.
 SELECT students.name, students.age, faculties.name
 FROM users
-INNER JOIN students ON students.faculty_id = faculties.id
+INNER JOIN faculties ON students.faculty_id = faculties.id
 
 
 --Составить второй JOIN-запрос, чтобы получить только тех студентов, у которых есть аватарки.
