@@ -21,4 +21,9 @@ public interface StudentService {
 
     Faculty findFaculty(long id);
 
+    int getCountOfStudent();
+
+    double getAverageOfStudent();
+
+    List<Student> getLastNStudent(int count);
 }
