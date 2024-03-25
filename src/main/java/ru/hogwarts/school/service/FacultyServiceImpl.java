@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
@@ -16,6 +18,9 @@ public class FacultyServiceImpl implements FacultyService {
 
     private final StudentRepository studentRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(FacultyServiceImpl.class);
+
+
     public FacultyServiceImpl(FacultyRepository facultyRepository, StudentRepository studentRepository) {
         this.facultyRepository = facultyRepository;
         this.studentRepository = studentRepository;
@@ -23,6 +28,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
+        logger.debug("method create was invoked");
         faculty.setId(null);
         return facultyRepository.save(faculty);
     }
@@ -34,6 +40,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty updateFaculty(long id, Faculty faculty) {
+        logger.debug("update create was invoked with parametrs id ={}, studentName = {}" + id, faculty.getName());
         return facultyRepository.findById(id)
                 .map(oldFaculty -> {
                     oldFaculty.setName(faculty.getName());
@@ -45,6 +52,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty deleteFaculty(long id) {
+        logger.debug("update delete was invoked with parameter id ={}", id);
         if (!facultyRepository.existsById(id)) {
             throw new FacultyNotFoundException(id);
         }

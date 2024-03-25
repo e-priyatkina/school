@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
@@ -17,6 +19,8 @@ public class StudentServiceImpl implements StudentService {
 
     private final FacultyRepository facultyRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+
     public StudentServiceImpl(StudentRepository studentRepository, FacultyRepository facultyRepository) {
         this.studentRepository = studentRepository;
         this.facultyRepository = facultyRepository;
@@ -24,6 +28,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student createStudent(Student student) {
+        logger.debug("method create was invoked");
         student.setId(null);
         if (student.getFaculty() != null && student.getFaculty().getId() != null) {
             Faculty faculty = facultyRepository.findById(student.getFaculty().getId())
@@ -40,7 +45,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(long id, Student student) {
- /*       return studentRepository.findById(id)
+        logger.debug("update create was invoked with parametrs id ={}, studentName = {}" + id, student.getName());
+        return studentRepository.findById(id)
                 .map(oldStudent -> {
                     oldStudent.setName(student.getName());
                     oldStudent.setAge(student.getAge());
@@ -51,16 +57,13 @@ public class StudentServiceImpl implements StudentService {
                     }
                     return oldStudent;
                 })
-                .orElseThrow(() -> new StudentNotFoundException(id));*/
-        if (!studentRepository.findById(id).isPresent()) {
-            throw new StudentNotFoundException(id);
-        }
-        return studentRepository.save(student);
+                .orElseThrow(() -> new StudentNotFoundException(id));
 
     }
 
     @Override
     public Student deleteStudent(long id) {
+        logger.debug("update delete was invoked with parameter id ={}", id);
         if (!studentRepository.existsById(id)) {
             throw new StudentNotFoundException(id);
         }
